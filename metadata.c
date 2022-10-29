@@ -16,7 +16,7 @@ int main(int argv, char** args){
     	//	printf("%u ", buffer[i]);
     	//printf("\n");
 	if(buffer[0] == 73 && buffer[1] == 68 && buffer[2] == 51){
-		printf("Attempting to read as ID3 File!\n");
+		printf("Attempting to read as a file with an ID3 header!\n");
 		// Version Check
 		printf("Version %u.%u\n",buffer[3],buffer[4]);
 		// Find Header frame

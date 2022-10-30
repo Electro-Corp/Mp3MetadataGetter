@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <png.h>
 int version = 0;
-uint8_t buffer[1000];
+uint8_t buffer[50000];
 int v = 0;
 int main(int argv, char** args){
 	if(args[2] == "-v")
@@ -114,26 +114,52 @@ int main(int argv, char** args){
 				printf("Release Year: %s\n",data); // Song title
 			
 		}
+		
 		// Output image
-		FILE* image = fopen("out.jpg","wb");
+		//printf("Extracting image to: %s.jpg \n",args[1]);
+		
 		offset = 0;
 		i = 0;
+		int t = 0;
 		while(sizeof(buffer) > offset){
 			//V4
-			if(buffer[offset] == 106 && buffer[offset+1] == 112 && buffer[offset+2] == 101 && buffer[offset+3] == 103)
+			if(buffer[offset] == 106 && buffer[offset+1] == 112 && buffer[offset+2] == 101 && buffer[offset+3] == 103){
 				break;
+			}
+			if(buffer[offset] == 80 && buffer[offset+1] == 78 && buffer[offset+2] == 71){
+				t = 1;
+				break;
+			}
 			offset++;
 		}
 		if(offset != 0){
+			if(t == 0)
 			offset += 7; // get away from the header
-			char* data = malloc(1000);
+			else
+			offset--;
+			char* data = malloc(100000);
 			
 			if(offset == 0) offset++;
-			//while(buffer[offset] != 51 && buffer[offset + 1] != 68 && buffer[offset+2] != 73 || offset < sizeof(buffer) || i < sizeof(data))
-				//data[i++] = buffer[offset++];
-			//fwrite(data,sizeof(data),1,image);
+			//while(buffer[offset] != 51 && buffer[offset + 1] != 68) {// && buffer[offset+2] != 73){
+			//while(i < 1000){
+			while(sizeof(buffer) > offset){
+				if(v == 1)
+				printf("I IS %d and offset is %d and buffer[offset] is  %u or %c if you like\n",i,offset,buffer[offset],(char)buffer[offset]);
+				if((char)buffer[offset] == '3' && (char)buffer[offset+1] == 'D' && (char)buffer[offset+2] == 'I')break;
+				//printf("Buffer is: %u\n",buffer[offset]);
+				data[i++] = buffer[offset++];
+			}
+			//printf("BUFFER IS %u and %u and %u \n",buffer[offset],buffer[offset+1],buffer[offset+2]);
+			FILE* image;
+			if(t == 0)
+				image = fopen("out.jpg","wb");
+			else
+				 image = fopen("out.png","wb");
+			fwrite(data,100000,1,image);
 			
 		}
+	}else{
+		printf("File not following ID3 Header format. First 3 bytes of file %s do not equal 'ID3'. Exiting now!\n",args[1]);
 	}
 	return 0;
 }
